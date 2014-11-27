@@ -12,118 +12,112 @@
 !********************************************************************
 module ParticleSwarmOptimization
 	use testcases
-    implicit NONE
+    	implicit NONE
    
 	integer, parameter :: c_iteration_max= 10000	
-    integer, parameter :: c_neighbors_max= 	40
-    	
-    integer, parameter :: c_pop_max= 10000
-    integer, parameter :: c_selected_max= 15
+    	integer, parameter :: c_neighbors_max= 	40
+	integer, parameter :: c_pop_max= 10000
+    	integer, parameter :: c_selected_max= 15
 	integer, parameter :: c_var_max= 100
-		
-	
-	double precision, dimension(c_pop_max) 					:: a_functionvalues
+
+	double precision, dimension(c_pop_max) 			:: a_functionvalues
 	double precision, dimension(c_pop_max, c_var_max) 	:: a_particles  
 	double precision, dimension(c_pop_max, c_var_max) 	:: a_speeds  
 	double precision, dimension(c_pop_max, c_var_max) 	:: a_pbest
-	double precision, dimension(c_var_max) 					:: a_gbest
+	double precision, dimension(c_var_max) 			:: a_gbest
 	double precision 													:: f_best
 	integer 																:: p_bestindex
 		
  	integer :: i_pop_size
-    integer :: i_var_size
+    	integer :: i_var_size
 		
-    double precision, parameter :: C1				= .5D00
-    double precision, parameter :: C2				= .6D00
-    double precision, parameter :: INERTIA_W	= .5D00
-    double precision, parameter :: EPSILON		= 1.D-08 
-    double precision, parameter :: STEADY		= 10
+    	double precision, parameter :: C1				= .5D00
+    	double precision, parameter :: C2				= .6D00
+    	double precision, parameter :: INERTIA_W	= .5D00
+    	double precision, parameter :: EPSILON		= 1.D-08 
+    	double precision, parameter :: STEADY		= 10
    
-    double precision, dimension(c_var_max) 	:: m_previous
-    double precision 									:: ff_best
-    integer 												:: i_steady_count
-	
-    
-    contains
+    	double precision, dimension(c_var_max) 	:: m_previous
+    	double precision 			:: ff_best
+    	integer 				:: i_steady_count
+
+contains
        	
     	
     	
         !********************************************************************
-		!** @Function: random
-		!**    
-		!** Wrapper generador de numeros pseudo aleatorios
-		!** Modificar 
-		!** 
-		!********************************************************************
+	!** @Function: random
+	!**    
+	!** Wrapper generador de numeros pseudo aleatorios
+	!** Modificar 
+	!** 
+	!********************************************************************
         function random( )
-             double precision :: random
-             call random_number( random )
-		end function random
+        	double precision :: random
+             	call random_number( random )
+	end function random
         
-		!********************************************************************
-		!** @Function: pswo_run
-		!**    
-		!** 
-		!** 
-		!** 
-		!********************************************************************
-		subroutine pswo_run( stub_function, i_pop, i_var )
-			interface stub_function
-				subroutine stub_function(  vector, i_dimension, fvalue ) 
-					double precision, intent(in out), dimension(:)	::	vector 
-					integer, intent(in out) 									:: i_dimension
-					double precision, intent(out) 							:: fvalue
-				end subroutine stub_function
-			end interface stub_function
-			integer, intent(in) :: i_pop
+	!********************************************************************
+	!** @Function: pswo_run
+	!**    
+	!** 
+	!** 
+	!** 
+	!********************************************************************
+	subroutine pswo_run( stub_function, i_pop, i_var )
+		interface stub_function
+			subroutine stub_function(  vector, i_dimension, fvalue ) 
+				double precision, intent(in out), dimension(:)	::	vector 
+				integer, intent(in out) 									:: i_dimension
+				double precision, intent(out) 							:: fvalue
+			end subroutine stub_function
+		end interface stub_function
+		integer, intent(in) :: i_pop
         	integer, intent(in) :: i_var
-        	
-			integer :: i	
+		integer :: i	
 
-			
     		i_pop_size= i_pop
         	i_var_size= i_var
     	
     		call pswo_init( )	
     		
      		do i= 1, c_iteration_max
-     			call pswo_evaluate( stub_function )
+  			call pswo_evaluate( stub_function )
      			call findbestneighbor()
      			call pswo_updatespeeds()
      			call pswo_updatepositions()
      			if ( pswo_coverged( a_gbest ) ) then
      				exit 
      			end if	
-			end do			
-			
-			call pswo_results(stub_function, i)
+		end do			
+		call pswo_results(stub_function, i)
 
-		end subroutine pswo_run
+	end subroutine pswo_run
 		
         !********************************************************************
-		!** @Function: pswo_init
-		!**    
-		!** Inicializacion de la poblacion de particulas
-		!**
-		!********************************************************************
+	!** @Function: pswo_init
+	!**    
+	!** Inicializacion de la poblacion de particulas
+	!**
+	!********************************************************************
     	subroutine pswo_init( )
             integer :: i
             integer :: j
             
-           	call random_seed
+        	call random_seed
 			do i= 1, i_pop_size
-            	do j= 1, i_var_size
+            			do j= 1, i_var_size
 					a_particles(i,j)= ( random() - 0.5D00) * 10
 					a_pbest(i,j)= 0.0
 					a_gbest(j)= 0
-                end do
+                		end do
 				a_functionvalues(i)= 1.0D30
 			end do
 			
 			do i= 1, i_pop_size
-            	do j= 1, i_var_size
-                	a_speeds(i, j)= ( random() - 0.5D00)
-                end do
+            			do j= 1, i_var_size
+                			a_speeds(i, j)= ( random() - 0.5D00)
+                		end do
 				a_functionvalues(i)= 1.0D30
 			end do
 			
@@ -131,7 +125,7 @@ module ParticleSwarmOptimization
 			f_best= 1.0D30
 			p_bestindex= 0
 			m_previous= 0
-    	 	i_steady_count= 0
+    	 		i_steady_count= 0
 			
 				
 		end subroutine pswo_init
